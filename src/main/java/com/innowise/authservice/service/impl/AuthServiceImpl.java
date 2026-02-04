@@ -99,7 +99,6 @@ public class AuthServiceImpl implements AuthService {
 
   }
 
-
   @Override
   public UserInfo findById(long id) {
     return userInfoRepository.findById(id).orElseThrow(()-> new UserNotFoundException("User not found with id : "+id));

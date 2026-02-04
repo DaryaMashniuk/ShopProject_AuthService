@@ -5,15 +5,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.experimental.UtilityClass;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -50,15 +47,6 @@ public class JwtTokenUtil {
     return (username.equals(userDetails.getUsername()) && !isExpired(token));
   }
 
-  public boolean validateToken(String token) {
-    try {
-      extractAllClaims(token);
-      return !isExpired(token);
-    } catch (Exception e) {
-      return false;
-    }
-  }
-
   public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
     final Claims claims = extractAllClaims(token);
     return claimsResolver.apply(claims);
@@ -74,12 +62,11 @@ public class JwtTokenUtil {
 
   public String generateToken(UserInfoDetails userInfoDetails) {
 
-    String role = userInfoDetails
-            .getAuthorities()
+    String role = userInfoDetails.getAuthorities()
             .stream()
             .findFirst()
-            .get()
-            .getAuthority();
+            .map(GrantedAuthority::getAuthority)
+            .orElse("ROLE_USER");
 
     Map<String, Object> claims = Map.of(
             "id", userInfoDetails.getId(),

@@ -9,11 +9,10 @@ import com.innowise.authservice.model.dto.ValidationRequestDto;
 import com.innowise.authservice.model.dto.ValidationResponseDto;
 import com.innowise.authservice.service.RefreshTokenService;
 import com.innowise.authservice.service.AuthService;
-import com.innowise.authservice.util.JwtTokenUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,20 +28,6 @@ public class AuthController implements AuthControllerApi {
 
   private final AuthService authService;
   private final RefreshTokenService refreshTokenService;
-
-//  @Override
-//  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-//  @GetMapping
-//  public ResponseEntity<List<UserInfo>> getAllUsers() {
-//    return ResponseEntity.ok().body(authService.findAll());
-//  }
-//
-//  @Override
-//  @PreAuthorize("hasAuthority('ROLE_USER')")
-//  @GetMapping("/{id}")
-//  public ResponseEntity<UserInfo> getUserById(@PathVariable long id) {
-//    return ResponseEntity.ok().body(authService.findById(id));
-//  }
 
   @Override
   @PostMapping("/login")
@@ -66,6 +51,6 @@ public class AuthController implements AuthControllerApi {
   @PostMapping("/register")
   public ResponseEntity<String> register(@RequestBody @Valid RegistrationDto registrationDto) {
     authService.save(registrationDto);
-    return ResponseEntity.ok().body("User registered succesfully");
+    return ResponseEntity.status(HttpStatus.CREATED).body("User registered succesfully");
   }
 }

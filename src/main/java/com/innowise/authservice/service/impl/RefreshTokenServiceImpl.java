@@ -30,6 +30,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   private static final long refreshTokenExpireTime = 86400000;
 
   @Transactional
+  @Override
   public RefreshToken createRefreshToken(Long userId) {
     UserInfo userInfo = userInfoRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with id: "+userId));
     Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUser(userId);
@@ -47,6 +48,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     return newRefreshToken;
   }
 
+  @Override
   public TokenResponseDto getNewToken(RefreshTokenRequest refreshTokenRequest) {
     RefreshToken refreshToken = refreshTokenRepository
             .findByToken(refreshTokenRequest.getToken())
@@ -63,6 +65,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
   }
 
+  @Override
   public boolean validateRefreshToken(RefreshToken refreshToken) {
 
     if (refreshToken.getExpiryDate().before(new Date(System.currentTimeMillis()))) {
