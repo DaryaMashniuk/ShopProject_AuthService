@@ -1,5 +1,6 @@
 package com.innowise.authservice.model;
 
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,17 +8,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Data
 public class UserInfoDetails implements UserDetails {
 
+  private Long id;
   private String username;
   private String password;
   private GrantedAuthority authorities;
 
   public UserInfoDetails(UserInfo userInfo) {
+    this.id = userInfo.getId();
     this.username = userInfo.getUsername();
     this.password = userInfo.getPassword();
-
-    this.authorities = new SimpleGrantedAuthority(userInfo.getRole().toString());
+    this.authorities =     new SimpleGrantedAuthority("ROLE_" + userInfo.getRole().toString());
   }
 
   @Override
