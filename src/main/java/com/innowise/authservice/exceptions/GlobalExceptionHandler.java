@@ -103,15 +103,15 @@ public class GlobalExceptionHandler {
     logger.error("Token validation failed {}", exception.getMessage());
     ErrorResponse errorResponse = new ErrorResponse(
             Instant.now(),
-            HttpStatus.BAD_REQUEST.value(),
-            HttpStatus.BAD_REQUEST.getReasonPhrase(),
+            HttpStatus.UNAUTHORIZED.value(),
+            HttpStatus.UNAUTHORIZED.getReasonPhrase(),
             exception.getMessage(),
             request.getDescription(false),
             null
     );
 
     return ResponseEntity
-            .status(HttpStatus.BAD_REQUEST)
+            .status(HttpStatus.UNAUTHORIZED)
             .contentType(MediaType.APPLICATION_JSON)
             .body(errorResponse);
   }

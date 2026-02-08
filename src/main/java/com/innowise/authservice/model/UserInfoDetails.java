@@ -20,7 +20,7 @@ public class UserInfoDetails implements UserDetails {
     this.id = userInfo.getId();
     this.username = userInfo.getUsername();
     this.password = userInfo.getPassword();
-    this.authorities =     new SimpleGrantedAuthority("ROLE_" + userInfo.getRole().toString());
+    this.authorities = new SimpleGrantedAuthority("ROLE_" + userInfo.getRole().toString());
   }
 
   @Override

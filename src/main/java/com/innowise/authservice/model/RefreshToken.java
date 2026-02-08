@@ -29,7 +29,7 @@ public class RefreshToken {
   @Column(nullable = false, length = 100)
   String token;
 
-  @Column(name = "expiry_date",columnDefinition = "DATE")
+  @Column(name = "expiry_date",columnDefinition = "TIMESTAMP")
   Date expiryDate;
 
   @OneToOne()

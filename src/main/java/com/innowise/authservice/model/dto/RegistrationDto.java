@@ -51,13 +51,4 @@ public class RegistrationDto {
           format = "email"
   )
   private String email;
-
-  @NotNull(message = "Role is required")
-  @Schema(
-          description = "User role",
-          example = "USER",
-          allowableValues = {"USER", "ADMIN"}
-  )
-  @Enumerated(EnumType.STRING)
-  private Roles role;
 }

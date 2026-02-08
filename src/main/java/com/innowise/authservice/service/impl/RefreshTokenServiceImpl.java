@@ -12,6 +12,7 @@ import com.innowise.authservice.repository.UserInfoRepository;
 import com.innowise.authservice.service.RefreshTokenService;
 import com.innowise.authservice.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   private final RefreshTokenRepository refreshTokenRepository;
   private final UserInfoRepository userInfoRepository;
   private final JwtTokenUtil jwtTokenUtil;
-  private static final long refreshTokenExpireTime = 86400000;
+  @Value("${jwt.refreshtoken.expiration}")
+  private long refreshTokenExpireTime;
 
   @Transactional
   @Override

@@ -5,8 +5,10 @@ import com.innowise.authservice.exceptions.UserAlreadyExistsWithEmailException;
 import com.innowise.authservice.exceptions.UserExistsWithUsernameException;
 import com.innowise.authservice.exceptions.UserNotFoundException;
 import com.innowise.authservice.model.RefreshToken;
+import com.innowise.authservice.model.Roles;
 import com.innowise.authservice.model.UserInfo;
 import com.innowise.authservice.model.UserInfoDetails;
+import com.innowise.authservice.model.dto.ChangeRoleRequest;
 import com.innowise.authservice.model.dto.LoginRequestDto;
 import com.innowise.authservice.model.dto.RegistrationDto;
 import com.innowise.authservice.model.dto.TokenResponseDto;
@@ -19,11 +21,11 @@ import com.innowise.authservice.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,17 +61,17 @@ public class AuthServiceImpl implements AuthService {
     if (userInfoRepository.findByUsername(registrationDto.getUsername()).isPresent()) {
       throw new UserExistsWithUsernameException(registrationDto.getUsername());
     }
-    registrationDto.setPassword(bCryptPasswordEncoder.encode(registrationDto.getPassword()));
-    UserInfo userInfo = new UserInfo();
-    userInfo.setUsername(registrationDto.getUsername());
-    userInfo.setPassword(registrationDto.getPassword());
-    userInfo.setRole(registrationDto.getRole());
-
     String email = registrationDto.getEmail();
     if (userInfoRepository.findByEmail(email).isPresent()){
       throw new UserAlreadyExistsWithEmailException("User already exists with email "+email);
     }
+    UserInfo userInfo = new UserInfo();
+    userInfo.setUsername(registrationDto.getUsername());
+    userInfo.setPassword(bCryptPasswordEncoder.encode(registrationDto.getPassword()));
     userInfo.setEmail(email);
+
+    userInfo.setRole(Roles.USER);
+
     userInfoRepository.save(userInfo);
   }
 
@@ -97,6 +99,19 @@ public class AuthServiceImpl implements AuthService {
       throw new TokenValidationException("Invalid token");
     }
 
+  }
+
+  @Transactional
+  @Override
+  public void changeRole(Long id,ChangeRoleRequest changeRoleRequest) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    UserInfoDetails current = (UserInfoDetails) auth.getPrincipal();
+
+    if (current.getId().equals(id)) {
+      throw new AccessDeniedException("Cannot change your own role");
+    }
+    UserInfo userInfo = findById(id);
+    userInfo.setRole(changeRoleRequest.getRole());
   }
 
   @Override

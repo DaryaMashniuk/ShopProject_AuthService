@@ -1,11 +1,13 @@
 package com.innowise.authservice.service;
 
 import com.innowise.authservice.model.UserInfo;
+import com.innowise.authservice.model.dto.ChangeRoleRequest;
 import com.innowise.authservice.model.dto.LoginRequestDto;
 import com.innowise.authservice.model.dto.RegistrationDto;
 import com.innowise.authservice.model.dto.TokenResponseDto;
 import com.innowise.authservice.model.dto.ValidationRequestDto;
 import com.innowise.authservice.model.dto.ValidationResponseDto;
+import jakarta.validation.Valid;
 
 /**
  * Service interface for authentication and user management operations.
@@ -13,6 +15,8 @@ import com.innowise.authservice.model.dto.ValidationResponseDto;
  * and user information retrieval.
  */
 public interface AuthService {
+
+  void changeRole(Long id, ChangeRoleRequest changeRoleRequest);
 
   /**
    * Finds a user by their unique identifier.

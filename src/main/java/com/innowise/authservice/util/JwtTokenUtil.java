@@ -6,7 +6,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
@@ -18,9 +17,11 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil {
 
-  @Value("${JWT_SECRET}")
+  @Value("${jwt.secret}")
   private String secretKey;
-  private static final long jwtExpiration = 1800000;
+
+  @Value("${jwt.expiration}")
+  private long jwtExpiration;
 
   public String extractUsername(String token) {
     return extractClaim(token, Claims::getSubject);
@@ -65,8 +66,8 @@ public class JwtTokenUtil {
     String role = userInfoDetails.getAuthorities()
             .stream()
             .findFirst()
-            .map(GrantedAuthority::getAuthority)
-            .orElse("ROLE_USER");
+            .map(a -> a.getAuthority().replace("ROLE_", ""))
+            .orElse("USER");
 
     Map<String, Object> claims = Map.of(
             "id", userInfoDetails.getId(),
