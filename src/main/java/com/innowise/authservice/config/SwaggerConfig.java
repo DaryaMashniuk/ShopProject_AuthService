@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
         ),
         servers = {
                 @Server(
-                        url = "http://localhost:8080",
+                        url = "http://localhost:8082",
                         description = "Development Server"
                 )
         }

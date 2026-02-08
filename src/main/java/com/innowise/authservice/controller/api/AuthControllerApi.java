@@ -160,6 +160,48 @@ public interface AuthControllerApi {
   @PostMapping("/register")
   ResponseEntity<String> register(@RequestBody @Valid RegistrationDto registrationDto);
 
+  @Operation(
+          summary = "Change user role",
+          description = "Changes the role of a specific user. Only administrators can perform this operation."
+  )
+  @ApiResponses(value = {
+          @ApiResponse(
+                  responseCode = "200",
+                  description = "User role changed successfully"
+          ),
+          @ApiResponse(
+                  responseCode = "400",
+                  description = "Invalid role data provided",
+                  content = @Content(
+                          mediaType = "application/json",
+                          schema = @Schema(implementation = ErrorResponse.class)
+                  )
+          ),
+          @ApiResponse(
+                  responseCode = "401",
+                  description = "User is not authenticated",
+                  content = @Content(
+                          mediaType = "application/json",
+                          schema = @Schema(implementation = ErrorResponse.class)
+                  )
+          ),
+          @ApiResponse(
+                  responseCode = "403",
+                  description = "User does not have ADMIN role",
+                  content = @Content(
+                          mediaType = "application/json",
+                          schema = @Schema(implementation = ErrorResponse.class)
+                  )
+          ),
+          @ApiResponse(
+                  responseCode = "404",
+                  description = "User with specified ID not found",
+                  content = @Content(
+                          mediaType = "application/json",
+                          schema = @Schema(implementation = ErrorResponse.class)
+                  )
+          )
+  })
   @PatchMapping("/users/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   ResponseEntity<Void> changeUserRole(@PathVariable Long id, @RequestBody @Valid ChangeRoleRequest changeRoleRequest);

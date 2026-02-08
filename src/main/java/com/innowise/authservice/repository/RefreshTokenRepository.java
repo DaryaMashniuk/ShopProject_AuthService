@@ -1,7 +1,6 @@
 package com.innowise.authservice.repository;
 
 import com.innowise.authservice.model.RefreshToken;
-import com.innowise.authservice.model.UserInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

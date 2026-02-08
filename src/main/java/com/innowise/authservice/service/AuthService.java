@@ -7,7 +7,6 @@ import com.innowise.authservice.model.dto.RegistrationDto;
 import com.innowise.authservice.model.dto.TokenResponseDto;
 import com.innowise.authservice.model.dto.ValidationRequestDto;
 import com.innowise.authservice.model.dto.ValidationResponseDto;
-import jakarta.validation.Valid;
 
 /**
  * Service interface for authentication and user management operations.
@@ -16,6 +15,15 @@ import jakarta.validation.Valid;
  */
 public interface AuthService {
 
+  /**
+   * Changes the role of a specific user in the system.
+   * Allows administrators to modify user roles (e.g., from USER to ADMIN or vice versa).
+   * Validates that the target user exists and that the requested role change is valid.
+   *
+   * @param id the unique identifier of the user whose role should be changed
+   * @param changeRoleRequest the request containing the new role information
+   * @throws com.innowise.authservice.exceptions.UserNotFoundException if no user is found with the specified ID
+   */
   void changeRole(Long id, ChangeRoleRequest changeRoleRequest);
 
   /**

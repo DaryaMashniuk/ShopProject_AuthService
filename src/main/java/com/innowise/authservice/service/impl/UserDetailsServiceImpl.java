@@ -3,7 +3,6 @@ package com.innowise.authservice.service.impl;
 import com.innowise.authservice.model.UserInfo;
 import com.innowise.authservice.model.UserInfoDetails;
 import com.innowise.authservice.repository.UserInfoRepository;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
