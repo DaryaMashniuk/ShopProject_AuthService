@@ -22,7 +22,7 @@ buildNumber.properties
 *.ipr
 out/
 .idea_modules/
-
+application-local.properties
 ### Eclipse ###
 .classpath
 .project

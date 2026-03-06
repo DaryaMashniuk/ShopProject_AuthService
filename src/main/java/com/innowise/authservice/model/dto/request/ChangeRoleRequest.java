@@ -1,4 +1,4 @@
-package com.innowise.authservice.model.dto;
+package com.innowise.authservice.model.dto.request;
 
 import com.innowise.authservice.model.Roles;
 import io.swagger.v3.oas.annotations.media.Schema;

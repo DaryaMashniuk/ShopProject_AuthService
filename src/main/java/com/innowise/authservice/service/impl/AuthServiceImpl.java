@@ -1,19 +1,23 @@
 package com.innowise.authservice.service.impl;
 
+import com.innowise.authservice.client.UserServiceClient;
 import com.innowise.authservice.exceptions.TokenValidationException;
 import com.innowise.authservice.exceptions.UserAlreadyExistsWithEmailException;
 import com.innowise.authservice.exceptions.UserExistsWithUsernameException;
 import com.innowise.authservice.exceptions.UserNotFoundException;
+import com.innowise.authservice.exceptions.UserServiceException;
 import com.innowise.authservice.model.RefreshToken;
 import com.innowise.authservice.model.Roles;
 import com.innowise.authservice.model.UserInfo;
 import com.innowise.authservice.model.UserInfoDetails;
-import com.innowise.authservice.model.dto.ChangeRoleRequest;
-import com.innowise.authservice.model.dto.LoginRequestDto;
-import com.innowise.authservice.model.dto.RegistrationDto;
-import com.innowise.authservice.model.dto.TokenResponseDto;
-import com.innowise.authservice.model.dto.ValidationResponseDto;
-import com.innowise.authservice.model.dto.ValidationRequestDto;
+import com.innowise.authservice.model.dto.request.ChangeRoleRequest;
+import com.innowise.authservice.model.dto.request.LoginRequestDto;
+import com.innowise.authservice.model.dto.request.RegistrationDto;
+import com.innowise.authservice.model.dto.request.UserRequestDto;
+import com.innowise.authservice.model.dto.response.TokenResponseDto;
+import com.innowise.authservice.model.dto.response.UserResponseDto;
+import com.innowise.authservice.model.dto.response.ValidationResponseDto;
+import com.innowise.authservice.model.dto.request.ValidationRequestDto;
 import com.innowise.authservice.repository.UserInfoRepository;
 import com.innowise.authservice.service.AuthService;
 import com.innowise.authservice.service.RefreshTokenService;
@@ -39,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
   private final RefreshTokenService refreshTokenService;
   private final UserInfoRepository userInfoRepository;
   private final JwtTokenUtil jwtTokenUtil;
+  private final UserServiceClient userServiceClient;
 
   @Override
   public TokenResponseDto authenticate(LoginRequestDto loginRequestDto) {
@@ -65,14 +70,35 @@ public class AuthServiceImpl implements AuthService {
     if (userInfoRepository.findByEmail(email).isPresent()){
       throw new UserAlreadyExistsWithEmailException("User already exists with email "+email);
     }
-    UserInfo userInfo = new UserInfo();
-    userInfo.setUsername(registrationDto.getUsername());
-    userInfo.setPassword(bCryptPasswordEncoder.encode(registrationDto.getPassword()));
-    userInfo.setEmail(email);
+    UserResponseDto userResponse;
+    try {
+       userResponse = userServiceClient.createUser(
+              UserRequestDto.builder()
+                      .name(registrationDto.getName())
+                      .email(email)
+                      .active(true)
+                      .surname(registrationDto.getSurname())
+                      .birthDate(registrationDto.getBirthDate())
+                      .build()
+      );
+    } catch (Exception e) {
+      throw new UserServiceException("Could not create user profile in UserService", e);
+    }
 
-    userInfo.setRole(Roles.USER);
+    try {
+      UserInfo userInfo = new UserInfo();
+      userInfo.setId(userResponse.getId());
+      userInfo.setUsername(registrationDto.getUsername());
+      userInfo.setPassword(bCryptPasswordEncoder.encode(registrationDto.getPassword()));
+      userInfo.setEmail(email);
 
-    userInfoRepository.save(userInfo);
+      userInfo.setRole(Roles.USER);
+
+      userInfoRepository.save(userInfo);
+    } catch (Exception e) {
+      userServiceClient.deleteUser(userResponse.getId());
+    }
+
   }
 
   @Override

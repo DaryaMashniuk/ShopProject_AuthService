@@ -1,6 +1,6 @@
 package com.innowise.authservice.exceptions;
 
-import com.innowise.authservice.model.dto.ErrorResponse;
+import com.innowise.authservice.model.dto.response.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

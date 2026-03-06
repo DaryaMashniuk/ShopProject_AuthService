@@ -5,8 +5,8 @@ import com.innowise.authservice.exceptions.UserNotFoundException;
 import com.innowise.authservice.model.RefreshToken;
 import com.innowise.authservice.model.UserInfo;
 import com.innowise.authservice.model.UserInfoDetails;
-import com.innowise.authservice.model.dto.RefreshTokenRequest;
-import com.innowise.authservice.model.dto.TokenResponseDto;
+import com.innowise.authservice.model.dto.request.RefreshTokenRequest;
+import com.innowise.authservice.model.dto.response.TokenResponseDto;
 import com.innowise.authservice.repository.RefreshTokenRepository;
 import com.innowise.authservice.repository.UserInfoRepository;
 import com.innowise.authservice.service.RefreshTokenService;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 
@@ -35,19 +34,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   @Override
   public RefreshToken createRefreshToken(Long userId) {
     UserInfo userInfo = userInfoRepository.findById(userId).orElseThrow(()-> new UserNotFoundException("User not found with id: "+userId));
-    Optional<RefreshToken> refreshToken = refreshTokenRepository.findByUser(userId);
+    RefreshToken refreshToken = refreshTokenRepository.findByUser(userId)
+            .orElse(new RefreshToken());
 
-    refreshToken.ifPresent(token -> refreshTokenRepository.deleteById(token.getId()));
+    refreshToken.setUserInfo(userInfo);
+    refreshToken.setToken(UUID.randomUUID().toString());
+    refreshToken.setExpiryDate(new Date(System.currentTimeMillis() + refreshTokenExpireTime));
 
-    RefreshToken newRefreshToken = RefreshToken
-            .builder()
-            .userInfo(userInfo)
-            .token(UUID.randomUUID().toString())
-            .expiryDate(new Date(System.currentTimeMillis()+refreshTokenExpireTime))
-            .build();
-
-    refreshTokenRepository.save(newRefreshToken);
-    return newRefreshToken;
+    refreshTokenRepository.save(refreshToken);
+    return refreshToken;
   }
 
   @Override

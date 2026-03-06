@@ -1,4 +1,4 @@
-package com.innowise.authservice.model.dto;
+package com.innowise.authservice.model.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +20,7 @@ public class LoginRequestDto {
   private String username;
 
   @NotBlank(message = "Password is required")
-  @Size(min = 6, max = 100, message = "Password must be between 6 and 100 characters")
+  @Size(min = 5, max = 100, message = "Password must be between 6 and 100 characters")
   @Schema(
           description = "User's password",
           example = "securePassword123",
