@@ -15,7 +15,6 @@ import com.innowise.authservice.model.dto.request.LoginRequestDto;
 import com.innowise.authservice.model.dto.request.RegistrationDto;
 import com.innowise.authservice.model.dto.request.UserRequestDto;
 import com.innowise.authservice.model.dto.response.TokenResponseDto;
-import com.innowise.authservice.model.dto.response.UserResponseDto;
 import com.innowise.authservice.model.dto.response.ValidationResponseDto;
 import com.innowise.authservice.model.dto.request.ValidationRequestDto;
 import com.innowise.authservice.repository.UserInfoRepository;
@@ -60,16 +59,6 @@ public class AuthServiceImpl implements AuthService {
             .build();
   }
 
-  /**
-   * Registers a new user.
-   *
-   * <p>The User Service is called first because it generates the unique user ID
-   * that must be shared between services. The Auth Service then stores
-   * authentication data using the same ID.</p>
-   *
-   * <p>If storing authentication data fails, the created user profile is rolled back
-   * by calling {@code deleteUser()} in the User Service to keep the system consistent.</p>
-   */
   @Transactional
   @Override
   public void save(RegistrationDto registrationDto) {
@@ -80,10 +69,19 @@ public class AuthServiceImpl implements AuthService {
     if (userInfoRepository.findByEmail(email).isPresent()){
       throw new UserAlreadyExistsWithEmailException("User already exists with email "+email);
     }
-    UserResponseDto userResponse;
+
+    UserInfo userInfo = new UserInfo();
+    userInfo.setUsername(registrationDto.getUsername());
+    userInfo.setPassword(bCryptPasswordEncoder.encode(registrationDto.getPassword()));
+    userInfo.setEmail(email);
+    userInfo.setRole(Roles.USER);
+
+    UserInfo savedUser = userInfoRepository.save(userInfo);
+
     try {
-       userResponse = userServiceClient.createUser(
+      userServiceClient.createUser(
               UserRequestDto.builder()
+                      .id(savedUser.getId())
                       .name(registrationDto.getName())
                       .email(email)
                       .active(registrationDto.isActive())
@@ -92,28 +90,9 @@ public class AuthServiceImpl implements AuthService {
                       .build()
       );
     } catch (Exception e) {
-      throw new UserServiceException("Could not create user profile in UserService", e);
-    }
+      userInfoRepository.delete(userInfo);
 
-    try {
-      UserInfo userInfo = new UserInfo();
-      userInfo.setId(userResponse.getId());
-      userInfo.setUsername(registrationDto.getUsername());
-      userInfo.setPassword(bCryptPasswordEncoder.encode(registrationDto.getPassword()));
-      userInfo.setEmail(email);
-
-      userInfo.setRole(Roles.USER);
-
-      userInfoRepository.save(userInfo);
-    } catch (Exception originalException) {
-      try{
-        userServiceClient.deleteUser(userResponse.getId());
-      } catch (Exception rollbackException) {
-        rollbackException.addSuppressed(originalException);
-        throw  new UserServiceException("Rollback failed after user creation error", rollbackException);
-      }
-
-      throw new UserServiceException("Failed to save user info", originalException);
+      throw new UserServiceException("Failed to create user profile in UserService", e);
     }
 
   }
