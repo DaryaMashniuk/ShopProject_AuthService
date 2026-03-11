@@ -60,6 +60,16 @@ public class AuthServiceImpl implements AuthService {
             .build();
   }
 
+  /**
+   * Registers a new user.
+   *
+   * <p>The User Service is called first because it generates the unique user ID
+   * that must be shared between services. The Auth Service then stores
+   * authentication data using the same ID.</p>
+   *
+   * <p>If storing authentication data fails, the created user profile is rolled back
+   * by calling {@code deleteUser()} in the User Service to keep the system consistent.</p>
+   */
   @Transactional
   @Override
   public void save(RegistrationDto registrationDto) {
@@ -76,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
               UserRequestDto.builder()
                       .name(registrationDto.getName())
                       .email(email)
-                      .active(true)
+                      .active(registrationDto.isActive())
                       .surname(registrationDto.getSurname())
                       .birthDate(registrationDto.getBirthDate())
                       .build()
@@ -95,8 +105,15 @@ public class AuthServiceImpl implements AuthService {
       userInfo.setRole(Roles.USER);
 
       userInfoRepository.save(userInfo);
-    } catch (Exception e) {
-      userServiceClient.deleteUser(userResponse.getId());
+    } catch (Exception originalException) {
+      try{
+        userServiceClient.deleteUser(userResponse.getId());
+      } catch (Exception rollbackException) {
+        rollbackException.addSuppressed(originalException);
+        throw  new UserServiceException("Rollback failed after user creation error", rollbackException);
+      }
+
+      throw new UserServiceException("Failed to save user info", originalException);
     }
 
   }
