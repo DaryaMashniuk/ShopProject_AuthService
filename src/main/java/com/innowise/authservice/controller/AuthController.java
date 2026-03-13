@@ -1,13 +1,13 @@
 package com.innowise.authservice.controller;
 
 import com.innowise.authservice.controller.api.AuthControllerApi;
-import com.innowise.authservice.model.dto.ChangeRoleRequest;
-import com.innowise.authservice.model.dto.LoginRequestDto;
-import com.innowise.authservice.model.dto.RefreshTokenRequest;
-import com.innowise.authservice.model.dto.RegistrationDto;
-import com.innowise.authservice.model.dto.TokenResponseDto;
-import com.innowise.authservice.model.dto.ValidationRequestDto;
-import com.innowise.authservice.model.dto.ValidationResponseDto;
+import com.innowise.authservice.model.dto.request.ChangeRoleRequest;
+import com.innowise.authservice.model.dto.request.LoginRequestDto;
+import com.innowise.authservice.model.dto.request.RefreshTokenRequest;
+import com.innowise.authservice.model.dto.request.RegistrationDto;
+import com.innowise.authservice.model.dto.response.TokenResponseDto;
+import com.innowise.authservice.model.dto.request.ValidationRequestDto;
+import com.innowise.authservice.model.dto.response.ValidationResponseDto;
 import com.innowise.authservice.service.RefreshTokenService;
 import com.innowise.authservice.service.AuthService;
 import jakarta.validation.Valid;

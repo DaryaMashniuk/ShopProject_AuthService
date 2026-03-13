@@ -1,6 +1,13 @@
 package com.innowise.authservice.controller.api;
 
-import com.innowise.authservice.model.dto.*;
+import com.innowise.authservice.model.dto.request.ChangeRoleRequest;
+import com.innowise.authservice.model.dto.request.LoginRequestDto;
+import com.innowise.authservice.model.dto.request.RefreshTokenRequest;
+import com.innowise.authservice.model.dto.request.RegistrationDto;
+import com.innowise.authservice.model.dto.request.ValidationRequestDto;
+import com.innowise.authservice.model.dto.response.ErrorResponse;
+import com.innowise.authservice.model.dto.response.TokenResponseDto;
+import com.innowise.authservice.model.dto.response.ValidationResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

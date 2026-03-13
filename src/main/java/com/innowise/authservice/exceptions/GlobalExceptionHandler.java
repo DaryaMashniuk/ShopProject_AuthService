@@ -1,6 +1,6 @@
 package com.innowise.authservice.exceptions;
 
-import com.innowise.authservice.model.dto.ErrorResponse;
+import com.innowise.authservice.model.dto.response.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +24,50 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
   private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
+
+  @ExceptionHandler(UserExistsWithUsernameException.class)
+  public ResponseEntity<ErrorResponse> handleUserExistsWithUsername(
+          UserExistsWithUsernameException ex,
+          WebRequest request) {
+
+    logger.warn("Username conflict: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            Instant.now(),
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(),
+            ex.getMessage(),
+            request.getDescription(false),
+            null
+    );
+
+    return ResponseEntity
+            .status(HttpStatus.CONFLICT)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(errorResponse);
+  }
+
+  @ExceptionHandler(UserServiceException.class)
+  public ResponseEntity<ErrorResponse> handleUserServiceException(
+          UserServiceException ex,
+          WebRequest request) {
+
+    logger.error("User service unavailable", ex);
+
+    ErrorResponse errorResponse = new ErrorResponse(
+            Instant.now(),
+            HttpStatus.SERVICE_UNAVAILABLE.value(),
+            HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase(),
+            ex.getMessage(),
+            request.getDescription(false),
+            null
+    );
+
+    return ResponseEntity
+            .status(HttpStatus.SERVICE_UNAVAILABLE)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(errorResponse);
+  }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<ErrorResponse> handleValidationExceptions(

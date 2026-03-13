@@ -1,8 +1,8 @@
 package com.innowise.authservice.service;
 
 import com.innowise.authservice.model.RefreshToken;
-import com.innowise.authservice.model.dto.RefreshTokenRequest;
-import com.innowise.authservice.model.dto.TokenResponseDto;
+import com.innowise.authservice.model.dto.request.RefreshTokenRequest;
+import com.innowise.authservice.model.dto.response.TokenResponseDto;
 
 /**
  * Service interface for refresh token management operations.

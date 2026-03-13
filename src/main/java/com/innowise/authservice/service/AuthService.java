@@ -1,12 +1,12 @@
 package com.innowise.authservice.service;
 
 import com.innowise.authservice.model.UserInfo;
-import com.innowise.authservice.model.dto.ChangeRoleRequest;
-import com.innowise.authservice.model.dto.LoginRequestDto;
-import com.innowise.authservice.model.dto.RegistrationDto;
-import com.innowise.authservice.model.dto.TokenResponseDto;
-import com.innowise.authservice.model.dto.ValidationRequestDto;
-import com.innowise.authservice.model.dto.ValidationResponseDto;
+import com.innowise.authservice.model.dto.request.ChangeRoleRequest;
+import com.innowise.authservice.model.dto.request.LoginRequestDto;
+import com.innowise.authservice.model.dto.request.RegistrationDto;
+import com.innowise.authservice.model.dto.response.TokenResponseDto;
+import com.innowise.authservice.model.dto.request.ValidationRequestDto;
+import com.innowise.authservice.model.dto.response.ValidationResponseDto;
 
 /**
  * Service interface for authentication and user management operations.
