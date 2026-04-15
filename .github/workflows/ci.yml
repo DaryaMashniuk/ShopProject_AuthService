@@ -1,4 +1,4 @@
-name: User Service CI/CD
+name: Auth Service CI/CD
 
 on:
   push:
